@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Net Income Report</title>
+    <link rel="stylesheet" href="CSS/netreport.css">
+   
+
+<script>
+    function goBack() {
+        window.location.href = "dashboard-for-user.html";
+    }
+</script>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
+        import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js";
+
+        const firebaseConfig = {
+            databaseURL: "https://brb-gas-station-default-rtdb.firebaseio.com"
+        };
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        window.fetchNetIncome = async function () {
+            const year = document.getElementById("yearSelect").value;
+            const month = document.getElementById("monthSelect").value;
+            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            const monthName = monthNames[parseInt(month) - 1];
+            const incomeRef = ref(db, `profits`);
+            
+            const snapshot = await get(incomeRef);
+            let data = snapshot.val();
+            let container = document.getElementById("incomeTables");
+            container.innerHTML = "";
+            let total = 0;
+            
+            if (data) {
+                let filteredData = Object.keys(data)
+                    .filter(date => date.startsWith(`${monthName}-`) && date.endsWith(`-${year}`))
+                    .sort((a, b) => new Date(a) - new Date(b));
+                
+                let tableHTML = `<h2>${monthName}-${year}</h2><table><tr><th>Date</th><th>Net Income</th></tr>`;
+                
+                filteredData.forEach(date => {
+                    let records = data[date];
+                    let dailyTotal = 0;
+                    if (records.Diesel) dailyTotal += parseFloat(records.Diesel.totalProfit || 0);
+                    if (records.Gasoline) dailyTotal += parseFloat(records.Gasoline.totalProfit || 0);
+                    total += dailyTotal;
+                    
+                    tableHTML += `<tr><td>${date}</td><td>₱${dailyTotal.toFixed(2)}</td></tr>`;
+                });
+                
+                tableHTML += `<tr class="total"><td>Total</td><td>₱${total.toFixed(2)}</td></tr></table>`;
+                container.innerHTML = tableHTML;
+            }
+            document.getElementById("grandTotal").innerText = total.toFixed(2);
+        };
+
+        window.loadYears = function () {
+            const yearSelect = document.getElementById("yearSelect");
+            const currentYear = new Date().getFullYear();
+            for (let i = currentYear; i >= 2000; i--) {
+                let option = document.createElement("option");
+                option.value = i;
+                option.textContent = i;
+                yearSelect.appendChild(option);
+            }
+        };
+
+        // Function to check if user is logged in
+                function isLoggedIn() {
+                    const loggedInUser = localStorage.getItem("loggedInUser"); // Check if user is stored
+                    if (!loggedInUser) {
+                        alert("You must log in to access this page.");
+                        window.location.href = "index.html"; // Redirect to login page
+                    }
+                }
+
+                // Run this function when the page loads
+                isLoggedIn();
+
+    </script>
+</head>
+<body onload="loadYears()">
+    <button onclick="goBack()" style="
+    margin-top: 20px; 
+    padding: 10px 15px; 
+    background-color: rgb(16, 125, 211); 
+    color: white; 
+    border: none; 
+    border-radius: 5px; 
+    cursor: pointer;">
+    ← Back to Dashboard
+</button>
+    <div class="container">
+        <h1>Net Income Report</h1>
+        <label for="yearSelect">Select Year:</label>
+        <select id="yearSelect" onchange="fetchNetIncome()"></select>
+        
+        <label for="monthSelect">Select Month:</label>
+        <select id="monthSelect" onchange="fetchNetIncome()">
+            <option value="01">January</option>
+            <option value="02">February</option>
+            <option value="03">March</option>
+            <option value="04">April</option>
+            <option value="05">May</option>
+            <option value="06">June</option>
+            <option value="07">July</option>
+            <option value="08">August</option>
+            <option value="09">September</option>
+            <option value="10">October</option>
+            <option value="11">November</option>
+            <option value="12">December</option>
+        </select>
+        
+        <div id="incomeTables"></div>
+        <h2>Grand Total: ₱<span id="grandTotal">0.00</span></h2>
+    </div>
+</body>
+</html>

@@ -1,0 +1,72 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+}
+.container {
+    width: 40%;
+    margin: 50px auto;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+h2 {
+    color: #333;
+}
+label {
+    font-weight: bold;
+    display: block;
+    margin-top: 10px;
+}
+input {
+    width: 80%;
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    text-align: center;
+}
+.result {
+    margin-top: 20px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #007BFF;
+}
+.calculate-btn, .save-btn {
+    background: #28a745;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    margin-top: 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 18px;
+}
+.save-btn {
+    background: #007BFF;
+}
+.calculate-btn:hover {
+    background: #218838;
+}
+.save-btn:hover {
+    background: #0056b3;
+}
+.back-btn{
+    margin-top: 10px;
+    margin-left: 10px;
+}
+select {
+    width: 85%;
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    text-align: center;
+    background: white;
+    cursor: pointer;
+}

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - BRB Gas Station</title>
+    <link rel="stylesheet" href="CSS/index.css">
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js";
+        import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyC9iwwhnot166hfFApjQ5vo9UKa0Vpz-1c",
+            authDomain: "brb-gas-station.firebaseapp.com",
+            databaseURL: "https://brb-gas-station-default-rtdb.firebaseio.com",
+            projectId: "brb-gas-station",
+            storageBucket: "brb-gas-station.appspot.com",
+            messagingSenderId: "325458028980",
+            appId: "1:325458028980:web:593444d7ec2d76e5a7eae1"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        document.addEventListener("DOMContentLoaded", () => {
+            // Check if user is already logged in
+            if (localStorage.getItem("loggedInUser")) {
+                window.location.href = "dashboard-for-user.html"; // Redirect to dashboard
+            }
+
+            const loginForm = document.getElementById("loginForm");
+
+            loginForm.addEventListener("submit", async function(event) {
+                event.preventDefault(); // Prevent default form submission
+
+                let username = document.getElementById("username").value.trim();
+                const password = document.getElementById("password").value.trim();
+
+                if (!username || !password) {
+                    alert("Please enter both username and password.");
+                    return;
+                }
+
+                // Convert username (dot → underscore) for Firebase matching
+                const firebaseUsername = username.replace(/\./g, "_");
+
+                const userRef = ref(db, 'Users/' + firebaseUsername);
+
+                get(userRef).then((snapshot) => {
+                    if (snapshot.exists()) {
+                        const userData = snapshot.val();
+                        if (userData.password === password) {
+                            // Store login session
+                            localStorage.setItem("loggedInUser", firebaseUsername);
+                            alert("Login Successful!");
+                            window.location.href = "dashboard-for-user.html"; // Redirect
+                        } else {
+                            alert("Incorrect password. Please try again.");
+                        }
+                    } else {
+                        alert("Username not found. Please register first.");
+                    }
+                }).catch(error => {
+                    alert("Login Failed: " + error.message);
+                });
+            });
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <img src="img/logobrb.png" alt="BRB Gas Station Logo" class="logo">
+        <h2>BRB GAS STATION</h2>
+        <form id="loginForm">
+            <input type="text" id="username" placeholder="Username" required>
+            <input type="password" id="password" placeholder="Password" required>
+            <button type="submit">Login</button>
+        </form>
+    </div>
+</body>
+</html>
