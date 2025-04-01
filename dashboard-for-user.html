@@ -48,7 +48,7 @@
         function getFormattedDate() {
                     const today = new Date();
                     const month = today.toLocaleString('en-US', { month: 'long' });
-                    const day = today.getDate().toString().padStart(2, '0'); // Add leading zero
+                    const day = today.getDate();
                     const year = today.getFullYear();
                     return `${month}-${day}-${year}`;
                 }
